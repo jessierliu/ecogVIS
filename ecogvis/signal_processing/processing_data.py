@@ -14,7 +14,8 @@ from ecogvis.signal_processing.hilbert_transform import hilbert_transform
 from process_nwb.wavelet_transform import gaussian
 from process_nwb.resample import resample
 from process_nwb.linenoise_notch import apply_linenoise_notch
-from ecogvis.signal_processing.common_referencing import subtract_CAR
+from ecogvis.signal_processing.common_referencing import subtract_CAR, \
+    subtract_CAR_by_device
 from ecogvis.functions.nwb_copy_file import nwb_copy_file
 
 
@@ -180,12 +181,26 @@ def preprocess_raw_data(block_path, config):
             electrodes = source.electrodes
             if config['referencing'] is not None:
                 if config['referencing'][0] == 'CAR':
-                    print("Computing and subtracting Common Average Reference in "
-                          + str(config['referencing'][1])+" channel blocks.")
-                    start = time.time()
-                    X = subtract_CAR(X, b_size=config['referencing'][1])
-                    print('CAR subtract time for {}: {} seconds'.format(
-                        block_name, time.time() - start))
+
+                    if config['referencing'][1] == 'device':
+                        print(
+                            "Computing and subtracting Common Average "
+                            "Reference by device.")
+                        start = time.time()
+                        X = subtract_CAR_by_device(
+                            X,
+                            elec_info=nwb.electrodes.to_dataframe()
+                        )
+                        print('CAR subtract time for {}: {} seconds'.format(
+                            block_name, time.time() - start))
+
+                    else:
+                        print("Computing and subtracting Common Average Reference in "
+                              + str(config['referencing'][1])+" channel blocks.")
+                        start = time.time()
+                        X = subtract_CAR(X, b_size=config['referencing'][1])
+                        print('CAR subtract time for {}: {} seconds'.format(
+                            block_name, time.time() - start))
                 elif config['referencing'][0] == 'bipolar':
                     X, bipolarTable, electrodes = get_bipolar_referenced_electrodes(
                         X, electrodes, rate, grid_step=1)
