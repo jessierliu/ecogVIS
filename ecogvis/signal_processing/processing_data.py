@@ -198,7 +198,10 @@ def preprocess_raw_data(block_path, config):
                         print("Computing and subtracting Common Average Reference in "
                               + str(config['referencing'][1])+" channel blocks.")
                         start = time.time()
-                        X = subtract_CAR(X, b_size=config['referencing'][1])
+                        X = subtract_CAR(X, b_size=config['referencing'][1],
+                                         elec_info=nwb.electrodes.to_dataframe(),
+                                         exclude_bad_electrodes=config[
+                                             'referencing'][2])
                         print('CAR subtract time for {}: {} seconds'.format(
                             block_name, time.time() - start))
                 elif config['referencing'][0] == 'bipolar':
@@ -232,11 +235,11 @@ def preprocess_raw_data(block_path, config):
 
             # Add preprocessed downsampled signals as an electrical_series
             referencing = 'None' if config['referencing'] is None else config[
-                'referencing'][0]
+                'referencing']
             notch = 'None' if config['Notch'] is None else str(config['Notch'])
             downs = 'No' if config['Downsample'] is None else 'Yes'
             config_comment = (
-                'referencing:' + referencing
+                'referencing:' + str(referencing)
                 + ', Notch:' + notch
                 + ', Downsampled:' + downs
             )

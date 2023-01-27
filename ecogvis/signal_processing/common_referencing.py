@@ -7,10 +7,19 @@ __all__ = ['subtract_CAR',
            'subtract_common_median_reference']
 
 
-def subtract_CAR(X, b_size=16):
+def subtract_CAR(X, b_size=16, elec_info=None, exclude_bad_channels=None):
     """
-    Compute and subtract common average reference in 16 channel blocks.
+    Compute and subtract common average reference in `b_size` channel blocks.
+    X of shape (time, electrodes).
     """
+
+    if exclude_bad_channelsis is not None and exclude_bad_channels ==  \
+            'exclude_bad_channels':
+        # If excluding bad channels, then NaN out those electrodes.
+        bc_idx = np.where(elec_info.bad.values)[0]
+        X[:, bc_idx] = np.nan
+        print('excluding elecs', elec_info.loc[elec_info.bad].index.values)
+        print(bc_idx)
 
     channels, time_points = X.shape
     s = channels // b_size
@@ -33,6 +42,7 @@ def subtract_CAR_by_device(X, elec_info=None):
     """
     Compute and subtract common average reference by electrode device as
     defined in the electrode table.
+    TODO: NEED TO VERIFY THIS
     """
     new_X = np.copy(X)
 
