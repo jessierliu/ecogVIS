@@ -200,7 +200,7 @@ def preprocess_raw_data(block_path, config):
                         start = time.time()
                         X = subtract_CAR(X, b_size=config['referencing'][1],
                                          elec_info=nwb.electrodes.to_dataframe(),
-                                         exclude_bad_electrodes=config[
+                                         exclude_bad_channels=config[
                                              'referencing'][2])
                         print('CAR subtract time for {}: {} seconds'.format(
                             block_name, time.time() - start))

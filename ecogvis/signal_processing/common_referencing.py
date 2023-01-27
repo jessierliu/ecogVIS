@@ -9,11 +9,12 @@ __all__ = ['subtract_CAR',
 
 def subtract_CAR(X, b_size=16, elec_info=None, exclude_bad_channels=None):
     """
-    Compute and subtract common average reference in `b_size` channel blocks.
+    Compute and subtract common average reference in `b_size` channel 
+    blocks.
     X of shape (time, electrodes).
     """
 
-    if exclude_bad_channelsis is not None and exclude_bad_channels ==  \
+    if exclude_bad_channels is not None and exclude_bad_channels ==  \
             'exclude_bad_channels':
         # If excluding bad channels, then NaN out those electrodes.
         bc_idx = np.where(elec_info.bad.values)[0]
