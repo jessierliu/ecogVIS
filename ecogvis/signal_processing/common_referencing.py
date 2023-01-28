@@ -14,25 +14,29 @@ def subtract_CAR(X, b_size=16, elec_info=None, exclude_bad_channels=None):
     X of shape (time, electrodes).
     """
 
+    X_car = np.copy(X)
+
     if exclude_bad_channels is not None and exclude_bad_channels ==  \
             'exclude_bad_channels':
         # If excluding bad channels, then NaN out those electrodes.
         bc_idx = np.where(elec_info.bad.values)[0]
-        X[:, bc_idx] = np.nan
-        print('excluding elecs', elec_info.loc[elec_info.bad].index.values)
-        print(bc_idx)
+        X_car[:, bc_idx] = np.nan
 
     channels, time_points = X.shape
     s = channels // b_size
     r = channels % b_size
 
     X_1 = X[:channels - r].copy()
+    X_1car = X_car[:channels - r].copy()
 
     X_1 = X_1.reshape((s, b_size, time_points))
-    X_1 -= np.nanmean(X_1, axis=1, keepdims=True)
+    X_1car = X_1car.reshape((s, b_size, time_points))
+    X_1 -= np.nanmean(X_1car, axis=1, keepdims=True)
+
     if r > 0:
         X_2 = X[channels - r:].copy()
-        X_2 -= np.nanmean(X_2, axis=0, keepdims=True)
+        X_2car = X_car[channels - r:].copy()
+        X_2 -= np.nanmean(X_2car, axis=0, keepdims=True)
         X = np.vstack([X_1.reshape((s * b_size, time_points)), X_2])
         return X
     else:
