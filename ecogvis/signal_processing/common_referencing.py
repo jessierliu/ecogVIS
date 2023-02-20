@@ -47,7 +47,7 @@ def subtract_CAR_by_device(X, elec_info=None):
     """
     Compute and subtract common average reference by electrode device as
     defined in the electrode table.
-    TODO: NEED TO VERIFY THIS
+    TODO: NEED TO VERIFY THIS, THIS IS UNTESTED.
     """
     new_X = np.copy(X)
 
@@ -59,9 +59,9 @@ def subtract_CAR_by_device(X, elec_info=None):
         elec_idx = elec_info.loc[
             elec_info.group_name == elec_device].index.values
 
-        cur_X = np.copy(X[:, elec_idx])
+        cur_X = np.copy(X[elec_idx, :])
         cur_X -= np.nanmean(cur_X, axis=1, keepdims=True)
-        new_X[:, elec_idx] = cur_X
+        new_X[elec_idx, :] = cur_X
 
     return new_X
 
